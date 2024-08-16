@@ -3,7 +3,7 @@ site_description: MkDocs test site for API course.
 
 theme:
   name: material
-  custom_dir: 'overrides'
+  custom_dir: 'overrides'112
 
 nav:
   - Home: index.md
