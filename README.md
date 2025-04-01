@@ -4,6 +4,8 @@
 
 Репозиторий демонстрирует базовую настройку документации с использованием [MkDocs](https://www.mkdocs.org/) и темы [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), а также интеграцию [Swagger UI](https://swagger.io/tools/swagger-ui/download/) и [Яндекс Метрики](https://metrika.yandex.ru/).
 
+Сайт опубликован по адресу: https://mazinden.github.io/mkdocs-api-course/
+
 ## Структура проекта
 
 ```
