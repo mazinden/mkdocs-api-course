@@ -1,0 +1,310 @@
+openapi: 3.0.0
+
+info:
+  title: Пример API для работы с пользователями
+  description: API для создания, получения, обновления и удаления пользователей.
+  version: 1.0.0
+
+security:
+  - api_key: []
+
+servers:
+  - url: http://158.160.86.46/api/prod
+    description: Основной сервер
+  - url: http://158.160.86.46/api/dev
+    description: Тестовый сервер
+
+paths:
+  /users:
+    get:
+      summary: Получить список всех пользователей
+      operationId: usersGET
+      tags:
+        - users
+      responses:
+        '200':
+          $ref: '#/components/responses/UserListSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      summary: Создать нового пользователя
+      operationId: usersPOST
+      tags:
+        - users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_user'
+      responses:
+        '201':
+          $ref: '#/components/responses/UserCreationSuccess'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /users/{id}:
+    get:
+      summary: Получить информацию о пользователе по ID
+      operationId: usersIdGET
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Уникальный идентификатор пользователя
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/UserNotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      summary: Обновить информацию о пользователе по ID
+      operationId: usersIdPUT
+      servers:
+        - url: http://158.160.86.46/api/dev
+      tags:
+        - users
+      parameters:
+        - name: id
+          description: Уникальный идентификатор пользователя
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_user'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/UserNotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      summary: Удалить пользователя
+      operationId: usersIdDELETE
+      tags:
+        - users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Уникальный идентификатор пользователя
+          schema:
+            type: integer
+      responses:
+        '204':
+          $ref: '#/components/responses/UserDeleteSuccess'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/UserNotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    user:
+      type: object
+      required:
+        - id
+        - username
+        - email
+        - firstName
+        - lastName
+        - city
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Уникальный идентификатор пользователя
+        username:
+          type: string
+          description: Логин пользователя в системе
+          maxLength: 35
+        email:
+          type: string
+          description: Адрес электронной почты
+        firstName:
+          type: string
+          description: Имя
+          maxLength: 20
+        lastName:
+          type: string
+          description: Фамилия
+          maxLength: 20
+        city:
+          type: string
+          description: Город проживания
+        age:
+          type: integer
+          description: Возраст
+          minimum: 1
+      example:
+        id: 123
+        username: newUser
+        email: user@example.com
+        firstName: Имя
+        lastName: Фамилия
+        city: Город
+        age: 30
+
+    create_user:
+      type: object
+      required:
+        - username
+        - email
+        - firstName
+        - lastName
+        - city
+      properties:
+        username:
+          type: string
+          description: Логин пользователя в системе
+          maxLength: 35
+        email:
+          type: string
+          description: Адрес электронной почты
+        firstName:
+          type: string
+          description: Имя
+          maxLength: 20
+        lastName:
+          type: string
+          description: Фамилия
+          maxLength: 20
+        city:
+          type: string
+          description: Город проживания
+        age:
+          type: integer
+          description: Возраст
+          minimum: 1
+      example:
+        username: newUser
+        email: user@example.com
+        firstName: Имя
+        lastName: Фамилия
+        city: Город
+        age: 30
+
+    error:
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+
+  responses:
+    UserListSuccess:
+      description: Список пользователей успешно получен
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/user'
+
+    Success:
+      description: Данные успешно получены
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user'
+
+    UserCreationSuccess:
+      description: Пользователь успешно создан
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user'
+
+    UserUpdateSuccess:
+      description: Данные пользователя успешно обновлены
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user'
+
+    UserDeleteSuccess:
+      description: Пользователь успешно удален
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+
+    UserNotFound:
+      description: ""
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+
+    Unauthorized:
+      description: ""
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+
+    BadRequest:
+      description: ""
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+
+    ServerError:
+      description: ""
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+
+    UnprocessableEntity:
+      description: ""
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: Token
+      in: header
+
+tags:
+  - name: users
+    description: Операции с пользователями
